@@ -1,0 +1,69 @@
+﻿@{
+    ViewData["Title"] = "Face Detection";
+}
+
+<h1>Face Detection using OpenCV</h1>
+
+    <div class="form-group form-control"> 
+        <h4 for="imageFile" class="text-Capitilize">Select Image:</h4>
+        <input type="file" class="form-control-file form-control" id="imageFile" name="imageFile">
+    </div>
+    <h1 id="result"></h1>
+
+
+<script>
+
+
+  
+        const imageInput = document.getElementById('imageFile');
+
+        imageInput.addEventListener('change', (event) => {
+
+            const file = imageInput.files[0];
+
+            const formData = new FormData();
+            formData.append('imageFile', file);
+
+            fetch('/Face/DetectFace', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Process the response data
+                    console.log(data);
+                    if (data.hasFace === true  && data.isCentered === true && data.faces.length === 1) {
+
+
+                    document.getElementById('result').innerHTML = "This image is valid as it has a face(s)! and is centered"
+                }
+                else if (data.hasFace === true && data.isCentered === false && data.faces.length === 0) {
+                    document.getElementById('result').innerHTML = "This image is Invalid because the face is not centered"
+
+
+                }
+                else if (data.hasFace === false && data.isCentered === false && data.faces.length === 0 ) {
+                
+                    document.getElementById('result').innerHTML = "This image is Invalid because there are no faces in the image"
+
+                }
+                else if (data.hasFace === true && data.isCentered === false && data.faces.length > 0) {
+                    document.getElementById('result').innerHTML = "This image is Invalid because there multiple faces in the image"
+
+
+                }
+                else if (data.hasFace === true && data.isCentered === true && data.faces.length > 1) {
+                    document.getElementById('result').innerHTML = "This image is Invalid because there multiple faces in the image"
+
+
+                }
+                })
+                .catch(error => {
+                    // Handle any errors
+                    console.error(error);
+                });
+        });
+
+    
+    
+</script>
